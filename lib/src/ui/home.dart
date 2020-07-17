@@ -8,6 +8,14 @@ import 'package:gostore_flutter/src/models/Stores.dart';
 import 'package:gostore_flutter/src/services/api_services.dart';
 import 'package:http/http.dart' as http;
 
+import '../models/Stores.dart';
+import '../models/Stores.dart';
+import '../models/Stores.dart';
+import '../services/api_services.dart';
+import '../services/api_services.dart';
+import 'item_horizontal.dart';
+import 'item_horizontal.dart';
+
 class Home extends StatefulWidget {
   Home() : super();
   final String title = "BLK Finder";
@@ -16,7 +24,8 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
-  var url = "http://192.168.0.2/gostoreadmin/api.php";
+  // var url = "http://192.168.0.2/gostoreadmin/api.php";
+  var url = "http://172.20.10.4/haversine_webnative/api.php";
   Citys city;
   Stores stores;
   ApiServices _apiServices;
@@ -35,8 +44,8 @@ class _HomeState extends State<Home> {
   showAllData() async {
     var res_city = await http.get('$url?city');
     var res = await http.get('$url?allstore');
-    print(res.body);
-    print(res_city.body);
+    // print(res.body);
+    // print(res_city.body);
   }
 
   circularProgress() {
@@ -67,6 +76,32 @@ class _HomeState extends State<Home> {
     //   // // submit();
     //   // _generate(context);
     // }
+  }
+
+  itemStoreView(AsyncSnapshot<List<Stores>> list){
+    return Padding(
+      padding: EdgeInsets.all(5.0),
+      child: GridView.count(
+        crossAxisCount: 2,
+        childAspectRatio: 1.0,
+        mainAxisSpacing: 4.0,
+        crossAxisSpacing: 4.0,
+        children: list.data.map(
+          (anggrek){
+            return GestureDetector(
+              child: GridTile(
+                child: ItemHorizontal(stores),
+              ),
+              onTap: () {
+                // setState(() {
+                //   total += anggrek.price;
+                // });
+              },
+            );
+          },
+        ).toList(),
+      ),
+    );
   }
 
   @override
@@ -185,10 +220,27 @@ class _HomeState extends State<Home> {
                       childAspectRatio: 1.5,
                     ),
                     delegate: SliverChildBuilderDelegate(
-                      (context, index) => Container(
-                        margin: EdgeInsets.all(5.0),
-                        color: Colors.yellow,
-                      ),
+                      // (context, index) => Container(
+                      //   margin: EdgeInsets.all(5.0),
+                      //   color: Colors.yellow,
+                      // ),
+                      (context, index) {
+                        return FutureBuilder(
+                          future: ApiServices.getListStore(),
+                          builder: (context, snap){
+                            if (snap.hasError) {
+                              return Text('Error ${snap.error}');
+                            }
+                            //
+                            if (snap.hasData) {
+                              streamController.sink.add(snap.data.length);
+                              // gridview
+                              // return itemStoreView(snap);
+                            }
+                            // return snap.connectionState == ConnectionState.done? snap.hasData ? ItemHorizontal(snap.data[index]) :  Text('Retry') : circularProgress();
+                          },
+                        );
+                      }
                     ),
                   )
                 ],

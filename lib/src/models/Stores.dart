@@ -1,4 +1,20 @@
 class Stores {
+  int code;
+  List<DataStores> data;
+  Stores({
+      this.code,
+      this.data,
+  });
+  factory Stores.fromJson(Map<String, dynamic> json) => Stores(
+      code: json["code"],
+      data: List<DataStores>.from(json["msg"].map((x) => DataStores.fromJson(x))),
+  );
+  Map<String, dynamic> toJson() => {
+      "code": code,
+      "data": List<dynamic>.from(data.map((x) => x.toJson())),
+  };
+}
+class DataStores {
   int storeid;
   String name;
   String address;
@@ -14,8 +30,8 @@ class Stores {
   String cityid;
   String tags;
 
-  Stores(
-      {this.storeid,
+  DataStores({
+    this.storeid,
       this.name,
       this.address,
       this.latitude,
@@ -28,10 +44,11 @@ class Stores {
       this.open,
       this.closed,
       this.cityid,
-      this.tags});
+      this.tags
+    });
 
-  factory Stores.fromJson(Map<String, dynamic> json) {
-    return Stores(
+  factory DataStores.fromJson(Map<String, dynamic> json) {
+    return DataStores(
       storeid: json['storeid'],
       name: json['name'],
       address: json['address'],
